@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Cosmic Weather Engine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+height:100vh;
+overflow:hidden;
+font-family:'Orbitron',sans-serif;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+position:relative;
+}
+
+/* Cosmic Background */
+
+.stars{
+position:absolute;
+width:100%;
+height:100%;
+background:url('https://i.imgur.com/YKY28eT.png');
+animation:moveStars 120s linear infinite;
+opacity:0.5;
+}
+
+@keyframes moveStars{
+from{
+transform:translateY(0);
+}
+to{
+transform:translateY(-2000px);
+}
+}
+
+/* Aurora Glow */
+
+.aurora{
+position:absolute;
+width:800px;
+height:800px;
+background:radial-gradient(circle,
+rgba(0,255,255,0.25),
+rgba(255,0,255,0.1),
+transparent 70%);
+filter:blur(80px);
+animation:auroraMove 8s ease-in-out infinite alternate;
+}
+
+@keyframes auroraMove{
+0%{
+transform:translate(-200px,-100px);
+}
+100%{
+transform:translate(200px,100px);
+}
+}
+
+/* Glass Card */
+
+.weather-card{
+position:relative;
+z-index:10;
+width:350px;
+padding:30px;
+border-radius:25px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:
+0 0 30px rgba(0,255,255,0.2),
+0 0 60px rgba(255,0,255,0.1);
+text-align:center;
+transition:0.5s;
+}
+
+.weather-card:hover{
+transform:translateY(-8px) scale(1.02);
+box-shadow:
+0 0 40px cyan,
+0 0 80px magenta;
+}
+
+h1{
+font-size:28px;
+margin-bottom:10px;
+}
+
+.city{
+font-size:18px;
+opacity:0.8;
+margin-bottom:20px;
+}
+
+.temp{
+font-size:72px;
+font-weight:bold;
+margin:20px 0;
+background:linear-gradient(cyan,magenta);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.weather{
+font-size:22px;
+margin-bottom:20px;
+}
+
+.details{
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+}
+
+.detail-box{
+width:45%;
+padding:15px;
+border-radius:15px;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+}
+
+.label{
+font-size:12px;
+opacity:0.6;
+margin-bottom:5px;
+}
+
+.value{
+font-size:20px;
+}
+
+/* Lightning Flash */
+
+.flash{
+position:absolute;
+width:100%;
+height:100%;
+background:white;
+opacity:0;
+pointer-events:none;
+animation:lightning 7s infinite;
+}
+
+@keyframes lightning{
+0%,95%,100%{
+opacity:0;
+}
+96%{
+opacity:0.9;
+}
+97%{
+opacity:0;
+}
+98%{
+opacity:0.6;
+}
+}
+
+/* Floating Particles */
+
+.particle{
+position:absolute;
+width:3px;
+height:3px;
+background:white;
+border-radius:50%;
+opacity:0.7;
+animation:float linear infinite;
+}
+
+@keyframes float{
+from{
+transform:translateY(100vh);
+}
+to{
+transform:translateY(-100vh);
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="stars"></div>
+<div class="aurora"></div>
+<div class="flash"></div>
+
+<!-- particles -->
+<script>
+for(let i=0;i<80;i++){
+
+let particle=document.createElement("div");
+
+particle.classList.add("particle");
+
+particle.style.left=Math.random()*100+"vw";
+
+particle.style.animationDuration=
+(5+Math.random()*10)+"s";
+
+particle.style.opacity=Math.random();
+
+document.body.appendChild(particle);
+}
+</script>
+
+<div class="weather-card">
+
+<h1>🌌 Cosmic Weather</h1>
+
+<div class="city" id="city">Loading City...</div>
+
+<div class="temp" id="temp">--°</div>
+
+<div class="weather" id="weather">
+Loading atmosphere...
+</div>
+
+<div class="details">
+
+<div class="detail-box">
+<div class="label">Humidity</div>
+<div class="value" id="humidity">--%</div>
+</div>
+
+<div class="detail-box">
+<div class="label">Wind</div>
+<div class="value" id="wind">-- km/h</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const apiKey = "YOUR_API_KEY";
+
+const city = "Bhopal";
+
+async function getWeather(){
+
+const url =
+`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+const response = await fetch(url);
+
+const data = await response.json();
+
+document.getElementById("city").innerHTML =
+data.name;
+
+document.getElementById("temp").innerHTML =
+Math.round(data.main.temp)+"°C";
+
+document.getElementById("weather").innerHTML =
+data.weather[0].main;
+
+document.getElementById("humidity").innerHTML =
+data.main.humidity+"%";
+
+document.getElementById("wind").innerHTML =
+data.wind.speed+" km/h";
+
+}
+
+getWeather();
+
+</script>
+
+</body>
+</html>
